@@ -3,6 +3,8 @@ package com.napcat.jni;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.napcat.jni.core.NapCatBridge;
+import com.napcat.jni.model.event.Event;
+import com.napcat.jni.model.event.MessageEvent;
 import com.napcat.jni.plugin.Actions;
 import com.napcat.jni.plugin.ActionsClient;
 import com.napcat.jni.plugin.NapCatPlugin;
@@ -36,7 +38,7 @@ public class Main {
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
     public static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public static final String SDK_VERSION = "1.0.0";
+    public static final String SDK_VERSION = "1.0.1";
 
     private static NapCatBridge bridge;
     private static PluginLoader pluginLoader;
@@ -185,7 +187,8 @@ public class Main {
         if (pluginLoader == null || params == null) return;
         JsonNode ev = params.get("event");
         if (ev == null) return;
-        Object eventObj = MAPPER.convertValue(ev, Object.class);
+        // 将 JsonNode 转为强类型 MessageEvent
+        MessageEvent eventObj = MAPPER.convertValue(ev, MessageEvent.class);
         for (Map.Entry<String, NapCatPlugin> entry : pluginLoader.getLoaded().entrySet()) {
             NapCatPlugin plugin = entry.getValue();
             NapCatPluginContext ctx = pluginContexts.get(entry.getKey());
@@ -203,7 +206,8 @@ public class Main {
         if (pluginLoader == null || params == null) return;
         JsonNode ev = params.get("event");
         if (ev == null) return;
-        Object eventObj = MAPPER.convertValue(ev, Object.class);
+        // 将 JsonNode 转为强类型 Event 基类（插件内可通过 as() 转为具体子类型）
+        Event eventObj = MAPPER.convertValue(ev, Event.class);
         for (Map.Entry<String, NapCatPlugin> entry : pluginLoader.getLoaded().entrySet()) {
             NapCatPlugin plugin = entry.getValue();
             NapCatPluginContext ctx = pluginContexts.get(entry.getKey());

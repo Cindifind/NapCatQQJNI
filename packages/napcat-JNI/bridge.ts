@@ -102,7 +102,12 @@ export class JniBridge extends EventEmitter {
   }
 
   private async doStart (): Promise<void> {
-    const { javaPath, jvmArgs, bridgeJar, classpath, logger } = this.options;
+    const { javaPath, bridgeJar, classpath, logger } = this.options;
+
+    // 防御性转换：jvmArgs 可能是字符串（来自 WebUI 配置）
+    const jvmArgs = Array.isArray(this.options.jvmArgs)
+      ? this.options.jvmArgs
+      : String(this.options.jvmArgs).split(/\s+/).filter(s => s.length > 0);
 
     if (!bridgeJar || !fs.existsSync(bridgeJar)) {
       throw new Error(`[JniBridge] Bridge jar not found: ${bridgeJar}`);

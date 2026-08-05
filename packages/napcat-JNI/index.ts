@@ -28,6 +28,8 @@ interface JniPluginConfig {
   classpath: string[];
   /** 调用超时（毫秒） */
   callTimeout: number;
+  /** 过滤自身消息：勾选后当前账号发送的消息不转发给 Java 插件 */
+  filterSelfMessage: boolean;
   [key: string]: unknown;
 }
 
@@ -44,6 +46,7 @@ let currentConfig: JniPluginConfig = {
   javaPluginDir: DEFAULT_JAVA_PLUGIN_DIR,
   classpath: [],
   callTimeout: 30_000,
+  filterSelfMessage: false,
 };
 
 /** 已发现的 Java 插件列表 */
@@ -65,6 +68,18 @@ function loadConfig (configPath: string): void {
     if (fs.existsSync(configPath)) {
       const saved = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
       currentConfig = { ...currentConfig, ...saved };
+      // 兼容 jvmArgs: WebUI 保存可能是字符串而非数组
+      if (typeof currentConfig.jvmArgs === 'string') {
+        currentConfig.jvmArgs = (currentConfig.jvmArgs as string)
+          .split(/\s+/)
+          .filter(s => s.length > 0);
+      }
+      // 兼容 classpath: WebUI 保存可能是字符串而非数组
+      if (typeof currentConfig.classpath === 'string') {
+        currentConfig.classpath = (currentConfig.classpath as string)
+          .split(/[;,]/)
+          .filter(s => s.length > 0);
+      }
     }
   } catch (e) {
     logger?.warn('[JNI] Failed to load config:', e);
@@ -211,8 +226,17 @@ async function callAction (
 
 // ==================== 事件处理 ====================
 
+/** 判断是否为自身消息（user_id === self_id） */
+function isSelfMessage (event: unknown): boolean {
+  if (!event || typeof event !== 'object') return false;
+  const e = event as { user_id?: unknown; self_id?: unknown };
+  return e.user_id != null && e.self_id != null &&
+    String(e.user_id) === String(e.self_id);
+}
+
 const plugin_onmessage: PluginModule['plugin_onmessage'] = async (_ctx, event) => {
   if (!bridge || !currentConfig.enable) return;
+  if (currentConfig.filterSelfMessage && isSelfMessage(event)) return;
   try {
     // 通知 Java 侧处理消息（不等待返回，避免阻塞事件流）
     bridge.notify('onMessage', { event });
@@ -223,6 +247,7 @@ const plugin_onmessage: PluginModule['plugin_onmessage'] = async (_ctx, event) =
 
 const plugin_onevent: PluginModule['plugin_onevent'] = async (_ctx, event) => {
   if (!bridge || !currentConfig.enable) return;
+  if (currentConfig.filterSelfMessage && isSelfMessage(event)) return;
   try {
     bridge.notify('onEvent', { event });
   } catch (e) {
@@ -278,6 +303,7 @@ function rebuildConfigUI (ctx: NapCatPluginContext): void {
     ctx.NapCatConfig.text('javaPluginDir', 'Java 插件目录', DEFAULT_JAVA_PLUGIN_DIR, 'Java 插件存放目录（相对数据目录或绝对路径）'),
     ctx.NapCatConfig.text('jvmArgs', 'JVM 参数', '-Xmx256m', 'JVM 启动参数，多个参数用空格分隔'),
     ctx.NapCatConfig.number('callTimeout', '调用超时(ms)', 30_000, '调用 Java 方法的超时时间'),
+    ctx.NapCatConfig.boolean('filterSelfMessage', '过滤自身消息', false, '勾选后，当前账号发送的消息不转发给 Java 插件'),
   );
 }
 
