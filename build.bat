@@ -32,7 +32,7 @@ if errorlevel 1 (
 
 :: ---------- 安装依赖 ----------
 echo.
-echo [1/5] 安装 Node 依赖...
+echo [1/6] 安装 Node 依赖...
 if not exist node_modules (
     call pnpm install
     if errorlevel 1 (
@@ -47,7 +47,7 @@ if not exist node_modules (
 :: ---------- 构建 Java SDK ----------
 echo.
 if "%NO_MAVEN%"=="0" (
-    echo [2/5] 构建 Java SDK （NapCatSDK）...
+    echo [2/6] 构建 Java SDK （NapCatSDK）...
     echo        Profile: bridge（构建运行时 fat-jar）+ dev（跳过 GPG 签名）
     pushd NapCatSDK
     call mvn -q -Pdev -Pbridge clean package -DskipTests
@@ -65,19 +65,19 @@ if "%NO_MAVEN%"=="0" (
         echo [警告] JAR 未生成，请检查 Maven 构建日志
     )
 ) else (
-    echo [2/5] 跳过 Java SDK 构建（未检测到 Maven）
+    echo [2/6] 跳过 Java SDK 构建（未检测到 Maven）
 )
 
 :: ---------- 构建插件 ----------
 echo.
-echo [3/5] 构建 WebUI 前端...
+echo [3/6] 构建 WebUI 前端...
 call pnpm run build:webui
 if errorlevel 1 (
     echo [警告] build:webui 失败，继续打包...
 )
 
 echo.
-echo [4/5] 构建内置插件 & JNI 插件...
+echo [4/6] 构建内置插件 & JNI 插件...
 call pnpm run build:plugin-builtin
 call pnpm run build:plugin-jni
 if errorlevel 1 (
@@ -88,7 +88,7 @@ if errorlevel 1 (
 
 :: ---------- 构建 Framework（主程序） ----------
 echo.
-echo [5/5] 构建 NapCat Framework （主程序）...
+echo [5/6] 构建 NapCat Framework （主程序）...
 call pnpm run build:framework
 if errorlevel 1 (
     echo [错误] Framework 构建失败
@@ -96,12 +96,23 @@ if errorlevel 1 (
     exit /b 1
 )
 
+:: ---------- 构建 Shell（Shell 启动器版本） ----------
+:: Shell 版本不依赖 Java SDK / JNI 插件，只需 WebUI 前端作为前置
+echo.
+echo [6/6] 构建 NapCat Shell （Shell 启动器版本）...
+call pnpm run build:shell
+if errorlevel 1 (
+    echo [警告] build:shell 失败，继续...
+)
+
 echo.
 echo ========================================================
-echo   打包完成！产物位于: packages\napcat-framework\dist\
+echo   打包完成！
+echo     Framework 产物: packages\napcat-framework\dist\
+echo     Shell     产物: packages\napcat-shell\dist\
 echo ========================================================
 echo.
-echo   目录结构：
+echo   Framework 目录结构：
 echo     dist\
 echo      +-- napcat.mjs            主程序入口
 echo      +-- napiloader.dll / napimain.exe   QQNT 注入器
@@ -110,6 +121,16 @@ echo      +-- static\              WebUI 前端
 echo      +-- config\              默认配置文件
 echo      +-- plugins\
 echo           +-- napcat-plugin-builtin\    内置插件
+echo           +-- napcat-plugin-jni\        Java 桥接插件（包含 JAR）
+echo.
+echo   Shell 目录结构：
+echo     dist\
+echo      +-- napcat.mjs            Shell 启动器入口
+echo      +-- native\              原生依赖
+echo      +-- static\              WebUI 前端
+echo      +-- config\              默认配置文件
+echo      +-- napcat-shell-loader\  Shell 加载器
+echo      +-- plugins\
 echo           +-- napcat-plugin-jni\        Java 桥接插件（包含 JAR）
 echo.
 pause

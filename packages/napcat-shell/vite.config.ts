@@ -31,6 +31,10 @@ const ShellBaseConfigPlugin: PluginOption[] = [
       { src: '../napcat-core/external/napcat.json', dest: 'dist/config/' },
       { src: '../../package.json', dest: 'dist' },
       { src: '../napcat-shell-loader', dest: 'dist' },
+      // JNI 插件：拷贝构建产物 + 桥接 JAR
+      { src: '../napcat-JNI/dist/index.mjs', dest: 'dist/plugins/napcat-plugin-jni/' },
+      { src: '../napcat-JNI/package.json', dest: 'dist/plugins/napcat-plugin-jni/' },
+      { src: '../../NapCatSDK/target/napcat-jni-bridge.jar', dest: 'dist/plugins/napcat-plugin-jni/' },
     ],
   }),
   nodeResolve(),
