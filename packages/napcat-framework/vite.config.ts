@@ -28,8 +28,6 @@ const FrameworkBaseConfigPlugin: PluginOption[] = [
       { src: '../napcat-webui-frontend/dist/', dest: 'dist/static/', flatten: false },
       { src: './napcat.cjs', dest: 'dist' },
       { src: './nativeLoader.cjs', dest: 'dist' },
-      { src: './preload.cjs', dest: 'dist' },
-      { src: './renderer.js', dest: 'dist' },
       { src: '../../package.json', dest: 'dist' },
       { src: '../../logo.png', dest: 'dist' },
       // 内置插件：拷贝构建产物到 plugins 目录
@@ -39,7 +37,7 @@ const FrameworkBaseConfigPlugin: PluginOption[] = [
       // JNI 插件：拷贝构建产物 + 桥接 JAR + 示例 Java 插件
       { src: '../napcat-JNI/dist/index.mjs', dest: 'dist/plugins/napcat-plugin-jni/' },
       { src: '../napcat-JNI/package.json', dest: 'dist/plugins/napcat-plugin-jni/' },
-      { src: '../../NapCatSDK/target/napcat-jni-bridge.jar', dest: 'dist/plugins/napcat-plugin-jni/' },
+      { src: '../../NapCatSDK/target/onebot-bridge.jar', dest: 'dist/plugins/napcat-plugin-jni/' },
     ],
   }),
   nodeResolve(),

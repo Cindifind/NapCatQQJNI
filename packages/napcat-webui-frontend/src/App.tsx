@@ -6,6 +6,8 @@ import PageBackground from '@/components/page_background';
 import PageLoading from '@/components/page_loading';
 import Toaster from '@/components/toaster';
 
+import Live2D from '@/live2D/live2D.tsx';
+
 import DialogProvider from '@/contexts/dialog';
 
 import useAuth from '@/hooks/auth';
@@ -28,7 +30,6 @@ const TerminalPage = lazy(() => import('@/pages/dashboard/terminal'));
 const PluginPage = lazy(() => import('@/pages/dashboard/plugin'));
 const PluginStorePage = lazy(() => import('@/pages/dashboard/plugin_store'));
 const ExtensionPage = lazy(() => import('@/pages/dashboard/extension'));
-
 function App () {
   return (
     <DialogProvider>
@@ -67,26 +68,29 @@ function AuthChecker ({ children }: { children: React.ReactNode; }) {
 
 function AppRoutes () {
   return (
-    <Routes>
-      <Route path='/' element={<IndexPage />}>
-        <Route index element={<DashboardIndexPage />} />
-        <Route path='network' element={<NetworkPage />} />
-        <Route path='config' element={<ConfigPage />} />
-        <Route path='logs' element={<LogsPage />} />
-        <Route path='debug' element={<DebugPage />}>
-          <Route path='ws' element={<WSDebug />} />
-          <Route path='http' element={<HttpDebug />} />
+    <>
+      <Live2D />
+      <Routes>
+        <Route path='/' element={<IndexPage />}>
+          <Route index element={<DashboardIndexPage />} />
+          <Route path='network' element={<NetworkPage />} />
+          <Route path='config' element={<ConfigPage />} />
+          <Route path='logs' element={<LogsPage />} />
+          <Route path='debug' element={<DebugPage />}>
+            <Route path='ws' element={<WSDebug />} />
+            <Route path='http' element={<HttpDebug />} />
+          </Route>
+          <Route path='file_manager' element={<FileManagerPage />} />
+          <Route path='terminal' element={<TerminalPage />} />
+          <Route path='plugins' element={<PluginPage />} />
+          <Route path='plugin_store' element={<PluginStorePage />} />
+          <Route path='extension' element={<ExtensionPage />} />
+          <Route path='about' element={<AboutPage />} />
         </Route>
-        <Route path='file_manager' element={<FileManagerPage />} />
-        <Route path='terminal' element={<TerminalPage />} />
-        <Route path='plugins' element={<PluginPage />} />
-        <Route path='plugin_store' element={<PluginStorePage />} />
-        <Route path='extension' element={<ExtensionPage />} />
-        <Route path='about' element={<AboutPage />} />
-      </Route>
-      <Route path='/qq_login' element={<QQLoginPage />} />
-      <Route path='/web_login' element={<WebLoginPage />} />
-    </Routes>
+        <Route path='/qq_login' element={<QQLoginPage />} />
+        <Route path='/web_login' element={<WebLoginPage />} />
+      </Routes>
+    </>
   );
 }
 

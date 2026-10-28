@@ -56,9 +56,9 @@ function getTargetSteps (target: BuildTarget): BuildStep[] {
         errorMessage: 'Java SDK build failed',
       },
       {
-        name: 'Copy napcat-jni-bridge.jar',
-        command: 'cp -f NapCatSDK/target/napcat-jni-bridge.jar packages/napcat-JNI/napcat-jni-bridge.jar',
-        errorMessage: 'Failed to copy napcat-jni-bridge.jar',
+        name: 'Copy onebot-bridge.jar',
+        command: 'cp -f NapCatSDK/target/onebot-bridge.jar packages/napcat-JNI/onebot-bridge.jar',
+        errorMessage: 'Failed to copy onebot-bridge.jar',
       },
       {
         name: 'Build JNI plugin',

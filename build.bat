@@ -58,8 +58,8 @@ if "%NO_MAVEN%"=="0" (
         exit /b 1
     )
     popd
-    if exist "NapCatSDK\target\napcat-jni-bridge.jar" (
-        copy /y "NapCatSDK\target\napcat-jni-bridge.jar" "packages\napcat-JNI\napcat-jni-bridge.jar" >nul
+    if exist "NapCatSDK\target\onebot-bridge.jar" (
+        copy /y "NapCatSDK\target\onebot-bridge.jar" "packages\napcat-JNI\onebot-bridge.jar" >nul
         echo   JAR 已生成并拷贝到 packages\napcat-JNI\
     ) else (
         echo [警告] JAR 未生成，请检查 Maven 构建日志
@@ -87,6 +87,20 @@ if errorlevel 1 (
 )
 
 :: ---------- 构建 Framework（主程序） ----------
+:: 前置检查：桥接 JAR 缺失时 vite-plugin-cp 只告警不报错，会静默产出不可用的插件包
+:: 优先用 Maven 输出；没有时复用 packages\napcat-JNI 内已有的 JAR
+if not exist "NapCatSDK\target\onebot-bridge.jar" (
+    if exist "packages\napcat-JNI\onebot-bridge.jar" (
+        echo [提示] 未找到 NapCatSDK\target\onebot-bridge.jar，复用 packages\napcat-JNI\onebot-bridge.jar
+        if not exist "NapCatSDK\target" mkdir "NapCatSDK\target"
+        copy /y "packages\napcat-JNI\onebot-bridge.jar" "NapCatSDK\target\onebot-bridge.jar" >nul
+    )
+)
+if not exist "NapCatSDK\target\onebot-bridge.jar" (
+    echo [错误] 未找到桥接 JAR，请先构建：cd NapCatSDK 后执行 mvn -Pdev -Pbridge clean package -DskipTests
+    pause
+    exit /b 1
+)
 echo.
 echo [5/6] 构建 NapCat Framework （主程序）...
 call pnpm run build:framework

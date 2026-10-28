@@ -427,7 +427,7 @@ export async function createJniBridge (
 }
 
 /** 默认桥接 JAR 文件名 */
-export const DEFAULT_BRIDGE_JAR = 'napcat-jni-bridge.jar';
+export const DEFAULT_BRIDGE_JAR = 'onebot-bridge.jar';
 
 /** 默认 Java 插件目录名 */
 export const DEFAULT_JAVA_PLUGIN_DIR = 'java-plugins';

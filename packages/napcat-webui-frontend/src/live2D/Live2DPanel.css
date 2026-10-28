@@ -1,0 +1,311 @@
+/* ===== 全局样式 ===== */
+.live2d-config + canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent;
+  touch-action: none;
+}
+
+/* ===== 气泡 ===== */
+.bubble {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 14px;
+  max-width: 220px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,240,245,0.95));
+  backdrop-filter: blur(12px);
+  color: #4a3548;
+  font-size: 12.5px;
+  line-height: 1.7;
+  border-radius: 16px 16px 16px 4px;
+  box-shadow: 0 4px 20px rgba(233, 69, 96, 0.1), 0 0 0 1px rgba(233, 69, 96, 0.08);
+  word-break: break-word;
+  white-space: pre-wrap;
+  z-index: 50;
+  pointer-events: none;
+  animation: bubbleIn 0.35s ease;
+}
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+.bubble-arrow {
+  position: absolute;
+  bottom: -5px;
+  left: 20px;
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, rgba(255,240,245,0.95), rgba(255,240,245,0.95));
+  transform: rotate(45deg);
+  border-radius: 0 0 2px 0;
+  box-shadow: 2px 2px 4px rgba(233, 69, 96, 0.06);
+}
+
+/* ===== 思考指示器 ===== */
+.think-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* ===== 对话按钮 ===== */
+.chat-toggle-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+.chat-toggle-btn:hover {
+  background: rgba(233, 69, 96, 0.25);
+  border-color: rgba(233, 69, 96, 0.4);
+  color: white;
+  transform: scale(1.08);
+}
+.chat-toggle-btn.active {
+  background: rgba(233, 69, 96, 0.35);
+  border-color: rgba(233, 69, 96, 0.5);
+  color: white;
+}
+.chat-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===== 对话输入栏 ===== */
+.chat-box {
+  position: absolute;
+  bottom: 44px;
+  left: 0;
+  right: 0;
+  padding: 0 12px;
+  z-index: 40;
+}
+.chat-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 4px 14px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 22px;
+}
+.chat-input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 12.5px;
+  outline: none;
+  padding: 6px 0;
+}
+.chat-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+  font-style: italic;
+}
+.chat-input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.chat-send {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+.chat-send.can-send {
+  background: linear-gradient(135deg, #e94560, #ff6b8a);
+  color: white;
+  box-shadow: 0 2px 10px rgba(233, 69, 96, 0.3);
+}
+.chat-send.can-send:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(233, 69, 96, 0.4);
+}
+.chat-send:disabled {
+  cursor: not-allowed;
+}
+.chat-send:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+/* 发送按钮加载动画 */
+.send-loading {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.send-loading span {
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  animation: sendPulse 1s ease-in-out infinite;
+}
+.send-loading span:nth-child(2) { animation-delay: 0.15s; }
+.send-loading span:nth-child(3) { animation-delay: 0.3s; }
+
+/* ===== 控制面板 ===== */
+.control-panel {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 160px;
+  padding: 12px;
+  background: rgba(20, 10, 20, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  color: white;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 40;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+.panel-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.panel-close:hover { color: rgba(255, 255, 255, 0.8); }
+.panel-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.panel-slider {
+  flex: 1;
+  height: 2px;
+  accent-color: #e94560;
+  cursor: pointer;
+}
+.panel-reset {
+  width: 100%;
+  padding: 6px 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.2s;
+}
+.panel-reset:hover {
+  background: rgba(233, 69, 96, 0.15);
+  border-color: rgba(233, 69, 96, 0.3);
+  color: white;
+}
+
+/* ===== 思考点 ===== */
+.think-dot {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(233, 69, 96, 0.7);
+  animation: thinkBounce 1.4s ease-in-out infinite;
+}
+.think-dot-1 { animation-delay: 0s; }
+.think-dot-2 { animation-delay: 0.2s; }
+.think-dot-3 { animation-delay: 0.4s; }
+
+/* ===== 过渡动画 ===== */
+.bubble-enter-active, .bubble-leave-active {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.bubble-enter-from {
+  opacity: 0;
+  transform: translate(-50%, -100%) translateY(10px) scale(0.95);
+}
+.bubble-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -100%) translateY(-6px) scale(0.95);
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+.slideUp-enter-active, .slideUp-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.slideUp-enter-from, .slideUp-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.panel-enter-active, .panel-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.panel-enter-from, .panel-leave-to {
+  opacity: 0;
+  transform: scale(0.9) translateY(-6px);
+}
+
+@keyframes thinkBounce {
+  0%, 80%, 100% {
+    opacity: 0.25;
+    transform: translateY(0) scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1);
+  }
+}
+@keyframes sendPulse {
+  0%, 80%, 100% { opacity: 0.2; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-2px); }
+}
